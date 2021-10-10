@@ -23,12 +23,14 @@ from PIL import Image
 app = Flask(__name__)
 api = Api(app)
 
+
 class Status(Resource):
     def get(self):
         try:
             return {'data': 'Api is Running'}
         except:
             return {'data': 'An Error Occurred during fetching Api'}
+
 
 class Hashing(Resource):
     def __init__(self):
