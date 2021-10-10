@@ -23,6 +23,13 @@ from PIL import Image
 app = Flask(__name__)
 api = Api(app)
 
+class Status(Resource):
+    def get(self):
+        try:
+            return {'data': 'Api is Running'}
+        except:
+            return {'data': 'An Error Occurred during fetching Api'}
+
 class Hashing(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
@@ -38,10 +45,10 @@ class Hashing(Resource):
         print(type(image_file))
 
         # Load ONNX model
-        session = onnxruntime.InferenceSession("Model/model.onnx")
+        session = onnxruntime.InferenceSession("model.onnx")
 
         # Load output hash matrix
-        seed1 = open("Model/neuralhash_128x96_seed1.dat", 'rb').read()[128:]
+        seed1 = open("neuralhash_128x96_seed1.dat", 'rb').read()[128:]
         seed1 = np.frombuffer(seed1, dtype=np.float32)
         seed1 = seed1.reshape([96, 128])
 
@@ -67,7 +74,8 @@ class Hashing(Resource):
         }
         return hash_dict
 
+pai.add_resourse(Status, "/")
 api.add_resource(Hashing, "/hashing")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
