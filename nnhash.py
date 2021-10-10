@@ -16,12 +16,15 @@ import sys
 import onnxruntime
 import numpy as np
 from flask import Flask
-from flask_restful import reqparse, Api, Resource, request
-import werkzeug
+from flask_restful import reqparse, Api, Resource
+from flask_cors import CORS
 from PIL import Image
+
+import werkzeug
 
 app = Flask(__name__)
 api = Api(app)
+CORS(app)
 
 
 class Status(Resource):
@@ -41,10 +44,8 @@ class Hashing(Resource):
         parse = reqparse.RequestParser()
         parse.add_argument('image', type=werkzeug.datastructures.FileStorage, location='files')
         args = parse.parse_args()
-        print(args)
         image_file = args['image']
 
-        print(type(image_file))
 
         # Load ONNX model
         session = onnxruntime.InferenceSession("model.onnx")
@@ -76,7 +77,7 @@ class Hashing(Resource):
         }
         return hash_dict
 
-pai.add_resourse(Status, "/")
+api.add_resource(Status, "/")
 api.add_resource(Hashing, "/hashing")
 
 if __name__ == "__main__":
